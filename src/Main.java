@@ -1,11 +1,10 @@
-import java.sql.Array;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
 
         Scanner s = new Scanner(System.in);
-        System.out.println("Type two values to multiply in base2 and base3");
+        System.out.println("Type two values to add in base2 and base3");
         int a = s.nextInt();
         bit[] a2 = (intToBitArray(a));
         System.out.println("a in base 2 = " + bitArrayToString(a2));
@@ -20,15 +19,15 @@ public class Main {
 
 
         long start = System.currentTimeMillis();
-        bit[] base2res = multiplyBase2(intToBitArray(a),intToBitArray(b));
+        bit[] base2res = addBase2(intToBitArray(a),intToBitArray(b));
         long base2FinishTime = System.currentTimeMillis();
         long base2Time = base2FinishTime - start;
 
         start = System.currentTimeMillis();
-        trit[] base3res = multiplyBase3(intToTritArray(a), intToTritArray(b));
+        trit[] base3res = addBase3(intToTritArray(a), intToTritArray(b));
         long base3FinishTime = System.currentTimeMillis();
         long base3Time = base3FinishTime - start;
-        
+
 
     }
 
@@ -72,13 +71,13 @@ public class Main {
 
         return ret;    }
 
-    private static bit[] multiplyBase2(bit[] a, bit[] b){
+    private static bit[] addBase2(bit[] a, bit[] b){
 
         return null;
 
     }
 
-    private static trit[] multiplyBase3(trit[] a, trit[] b){
+    private static trit[] addBase3(trit[] a, trit[] b){
 
         return null;
 
