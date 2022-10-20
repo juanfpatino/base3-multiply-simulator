@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class bit {
 
     public Base2Digit val = Base2Digit.ZERO;
@@ -7,6 +9,11 @@ public class bit {
     }
     public bit(int val){
         if (val == 1)
+            this.val = Base2Digit.ONE;
+    }
+
+    public bit(BigInteger val){
+        if (!val.equals(BigInteger.ZERO))
             this.val = Base2Digit.ONE;
     }
 

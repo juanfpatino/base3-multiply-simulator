@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class trit {
 
     public Base3Digit val = Base3Digit.ZERO;
@@ -9,6 +11,14 @@ public class trit {
         switch (val) {
             case 1 -> this.val = Base3Digit.ONE;
             case 2 -> this.val = Base3Digit.TWO;
+        }
+    }
+
+    public trit(BigInteger val){
+        if (BigInteger.ONE.equals(val)) {
+            this.val = Base3Digit.ONE;
+        } else if (BigInteger.TWO.equals(val)) {
+            this.val = Base3Digit.TWO;
         }
     }
 
