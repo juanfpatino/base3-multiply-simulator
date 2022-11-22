@@ -271,6 +271,16 @@ public class Main {
 
     private static trit[] addBase3(trit[] a, trit[] b){
 
+        //all possible values with 2 trits + 1 carry
+        //base 10 base 3
+        //0        0
+        //1        1
+        //2        2
+        //3        10
+        //4        11
+        //5        12
+        //6        20
+
         int n = Integer.max(a.length, b.length);
 
         List<trit> tmp = new LinkedList<>();
@@ -285,41 +295,63 @@ public class Main {
             else if (!(i < b.length)){
                 carry = getBase3Carry(a, tmp, carry, i);
             }
-            else{
+            else{//c + a + b
 
                 if(a[i].val == Base3Digit.ZERO){
                     if(b[i].val == Base3Digit.ZERO)
                     {
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 0
 
+                            tmp.add(new trit(0));
+
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 0
 
+                            tmp.add(new trit(1));
+                            carry = new trit(0);
+
                         }
                         else{//2 + 0 + 0
+
+                            tmp.add(new trit(2));
+                            carry = new trit(0);
 
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 1
 
+                            tmp.add(new trit(1));
+
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 1
 
+                            tmp.add(new trit(2));
+                            carry = new trit(0);
+
                         }
                         else{//2 + 0 + 1
+
+                            tmp.add(new trit(0));
+                            carry = new trit(1);
 
                         }
                     }
                     else{
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 2
 
+                            tmp.add(new trit(2));
+
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 2
 
+                            tmp.add(new trit(0));
+                            carry = new trit(1);
+
                         }
                         else{//2 + 0 + 2
-
+                            tmp.add(new trit(1));
+                            carry = new trit(1);
                         }
                     }
                 }
@@ -328,70 +360,78 @@ public class Main {
                     if(b[i].val == Base3Digit.ZERO)
                     {
                         if(carry.val == Base3Digit.ZERO){//0 + 1 + 0
-
+                            tmp.add(new trit(1));
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 1 + 0
-
+                            tmp.add(new trit(2));
+                            carry = new trit(0);
                         }
                         else{//2 + 1 + 0
-
+                            tmp.add(new trit(0));
+                            carry = new trit(1);
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
-                        if(carry.val == Base3Digit.ZERO){
-
+                        if(carry.val == Base3Digit.ZERO){//0 + 1 + 1
+                            tmp.add(new trit(2));
+                            carry = new trit(0);
                         }
-                        else if(carry.val == Base3Digit.ONE){
-
+                        else if(carry.val == Base3Digit.ONE){// 1 + 1 + 1
+                            tmp.add(new trit(0));
+                            carry = new trit(1);
                         }
-                        else{
-
+                        else{//2 + 1 + 1
+                            tmp.add(new trit(1));
+                            carry = new trit(1);
                         }
                     }
                     else{
-                        if(carry.val == Base3Digit.ZERO){
-
+                        if(carry.val == Base3Digit.ZERO){//0 + 1 + 2
+                            tmp.add(new trit(0));
+                            carry = new trit(1);
                         }
-                        else if(carry.val == Base3Digit.ONE){
-
+                        else if(carry.val == Base3Digit.ONE){//1 + 1 + 2
+                            tmp.add(new trit(1));
+                            carry = new trit(1);
                         }
-                        else{
-
+                        else{//2 + 1 + 2
+                            tmp.add(new trit(2));
+                            carry = new trit(1);
                         }
                     }
                 }
                 else{
                     if(b[i].val == Base3Digit.ZERO)
                     {
-                        if(carry.val == Base3Digit.ZERO){
+                        if(carry.val == Base3Digit.ZERO){//0 + 2 + 0
+                            tmp.add(new trit(2));
+                        }
+                        else if(carry.val == Base3Digit.ONE){//1 + 2 + 0
 
                         }
-                        else if(carry.val == Base3Digit.ONE){
-
-                        }
-                        else{
+                        else{//2 + 2 + 0
 
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
-                        if(carry.val == Base3Digit.ZERO){
+                        if(carry.val == Base3Digit.ZERO){//0 + 2 + 1
 
                         }
-                        else if(carry.val == Base3Digit.ONE){
+                        else if(carry.val == Base3Digit.ONE){//1 + 2 + 1
 
                         }
-                        else{
+                        else{//2 + 2 + 1
 
                         }
                     }
                     else{
-                        if(carry.val == Base3Digit.ZERO){
+                        if(carry.val == Base3Digit.ZERO){//0 + 2 + 2
 
                         }
-                        else if(carry.val == Base3Digit.ONE){
+                        else if(carry.val == Base3Digit.ONE){//1 + 2 + 2
 
                         }
-                        else{
+                        else{//2 + 2 + 2
 
                         }
                     }
