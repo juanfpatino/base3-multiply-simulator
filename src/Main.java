@@ -8,7 +8,11 @@ public class Main {
         System.out.println("Type two values to add in base2 and base3");
 
         //a
-        BigInteger a = s.nextBigInteger();
+        BigInteger a;
+        if(args.length == 0)
+            a = s.nextBigInteger();
+        else
+            a = new BigInteger(args[0]);
         bit[] a2 = (intToBitArray(a));
         String a2s = bitArrayToString(a2);
         System.out.println("a in base 2 = " + a2s);
@@ -17,7 +21,12 @@ public class Main {
         System.out.println("a in base 3 = " + a3s);
 
         //b
-        BigInteger b = s.nextBigInteger();
+        //a
+        BigInteger b;
+        if(args.length == 0)
+            b = s.nextBigInteger();
+        else
+            b = new BigInteger(args[1]);
         bit[] b2 = (intToBitArray(b));
         String b2s = bitArrayToString(b2);
         System.out.println("b in base 2 = " + b2s);
@@ -49,9 +58,9 @@ public class Main {
 
         String base2multS = bitArrayToString(base2mult);
 
-        System.out.println("\nIn base 2: " + bitArrayToString(a2) + "x" + bitArrayToString(b2) + " = " +  base2multS);
+        System.out.println("\nIn base 2: " + bitArrayToString(a2) + " x " + bitArrayToString(b2) + " = " +  base2multS);
         try{
-            System.out.println("In base 10: " + base2ToBigInteger(a2) +  "x " + base2ToBigInteger(b2) + " = " + base2ToBigInteger(base2mult));
+            System.out.println("In base 10: " + base2ToBigInteger(a2) +  " x " + base2ToBigInteger(b2) + " = " + base2ToBigInteger(base2mult));
         }
         catch (NumberFormatException n){
             System.out.println("Java builtin cannot parse such big a number");
@@ -59,9 +68,22 @@ public class Main {
         System.out.println("Computed in " + base2Time + "ms");
 
         start = System.currentTimeMillis();
-        trit[] base3res = addBase3(intToTritArray(a), intToTritArray(b));
+        trit[] base3res = addBase3(intToTritArray(a), intToTritArray(b)); //ADD
         long base3FinishTime = System.currentTimeMillis();
         long base3Time = base3FinishTime - start;
+
+        String ab3s = tritArrayToString(base3res);
+
+        System.out.println("\nIn base 3: " + tritArrayToString(a3) + " + " + tritArrayToString(b3) + " = " +  ab3s);
+        try{
+            System.out.println("In base 10: " + base3ToBigInteger(a3) + " + " + base3ToBigInteger(b3) + " = " + base3ToBigInteger(base3res));
+        }
+        catch (NumberFormatException n){
+            System.out.println("Java builtin cannot parse such big a number");
+        }
+        System.out.println("Computed in " + base3Time + "ms");
+
+
 
     }
 
@@ -237,6 +259,37 @@ public class Main {
         return i;
     }
 
+    private static BigInteger base3ToBigInteger(trit[] b) {
+        BigInteger i = BigInteger.ZERO;
+        BigInteger three = new BigInteger("3");
+        BigInteger six = new BigInteger("6");
+        StringBuilder s = new StringBuilder();
+        s.append(b.length);
+        String bLength = s.toString();
+
+        //this is messy
+        for(BigInteger j = BigInteger.ZERO; j.compareTo(new BigInteger(bLength)) < 0; j = j.add(BigInteger.ONE)){
+            trit thisTritVal = b[j.intValue()];
+
+            switch (thisTritVal.val){
+                case ONE -> {
+                    if(j.equals(BigInteger.ZERO))
+                        i = i.add(BigInteger.ONE);
+                    else
+                        i = i.add(three.pow(j.intValue()).multiply(BigInteger.ONE));
+                }
+                case TWO -> {
+                    if(j.equals(BigInteger.ZERO))
+                        i = i.add(BigInteger.TWO);
+                    else{
+                        i = i.add(three.pow(j.intValue()).multiply(BigInteger.TWO));
+                    }
+                }
+            }
+        }
+        return i;
+    }
+
     private static bit getBase2Carry(bit[] a, List<bit> tmp, bit carry, int i) {
         if(carry.val == Base2Digit.ONE){
             if(a[i].val == Base2Digit.ONE){ //1 + 1
@@ -256,14 +309,13 @@ public class Main {
     private static trit getBase3Carry(trit[] a, List<trit> tmp, trit carry, int i) {
         if(carry.val == Base3Digit.ONE){
             if(a[i].val == Base3Digit.ONE){ //1 + 1
-                tmp.add(new trit(0));
+                carry = b3Two(tmp);
             }
-            else{//1 + 0
-                tmp.add(new trit(1));
-                carry = new trit(0);
+            else if(a[i].val == Base3Digit.TWO){//2 + 1
+                carry = b3Three(tmp);
             }
         }
-        else{
+        else{//0 + whatever
             tmp.add(a[i]);
         }
         return carry;
@@ -302,56 +354,50 @@ public class Main {
                     {
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 0
 
-                            tmp.add(new trit(0));
+                            b3Zero(tmp);
 
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 0
 
-                            tmp.add(new trit(1));
-                            carry = new trit(0);
+                            carry = b3One(tmp);
 
                         }
                         else{//2 + 0 + 0
 
-                            tmp.add(new trit(2));
-                            carry = new trit(0);
+                            carry = b3Two(tmp);
 
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 1
 
-                            tmp.add(new trit(1));
+                            carry = b3One(tmp);
 
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 1
 
-                            tmp.add(new trit(2));
-                            carry = new trit(0);
+                            carry = b3Two(tmp);
 
                         }
                         else{//2 + 0 + 1
 
-                            tmp.add(new trit(0));
-                            carry = new trit(1);
+                            carry = b3Three(tmp);
 
                         }
                     }
                     else{
                         if(carry.val == Base3Digit.ZERO){//0 + 0 + 2
 
-                            tmp.add(new trit(2));
+                            carry = b3Two(tmp);
 
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 0 + 2
 
-                            tmp.add(new trit(0));
-                            carry = new trit(1);
+                            carry = b3Three(tmp);
 
                         }
                         else{//2 + 0 + 2
-                            tmp.add(new trit(1));
-                            carry = new trit(1);
+                            carry = b3Four(tmp);
                         }
                     }
                 }
@@ -360,43 +406,35 @@ public class Main {
                     if(b[i].val == Base3Digit.ZERO)
                     {
                         if(carry.val == Base3Digit.ZERO){//0 + 1 + 0
-                            tmp.add(new trit(1));
+                            carry = b3One(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 1 + 0
-                            tmp.add(new trit(2));
-                            carry = new trit(0);
+                            carry = b3Two(tmp);
                         }
                         else{//2 + 1 + 0
-                            tmp.add(new trit(0));
-                            carry = new trit(1);
+                            carry = b3Three(tmp);
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
                         if(carry.val == Base3Digit.ZERO){//0 + 1 + 1
-                            tmp.add(new trit(2));
-                            carry = new trit(0);
+                            carry = b3Two(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){// 1 + 1 + 1
-                            tmp.add(new trit(0));
-                            carry = new trit(1);
+                            carry = b3Three(tmp);
                         }
                         else{//2 + 1 + 1
-                            tmp.add(new trit(1));
-                            carry = new trit(1);
+                            carry = b3Four(tmp);
                         }
                     }
                     else{
                         if(carry.val == Base3Digit.ZERO){//0 + 1 + 2
-                            tmp.add(new trit(0));
-                            carry = new trit(1);
+                            carry = b3Three(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 1 + 2
-                            tmp.add(new trit(1));
-                            carry = new trit(1);
+                            carry = b3Four(tmp);
                         }
                         else{//2 + 1 + 2
-                            tmp.add(new trit(2));
-                            carry = new trit(1);
+                            carry = b3Five(tmp);
                         }
                     }
                 }
@@ -404,35 +442,36 @@ public class Main {
                     if(b[i].val == Base3Digit.ZERO)
                     {
                         if(carry.val == Base3Digit.ZERO){//0 + 2 + 0
-                            tmp.add(new trit(2));
+                            carry = b3Two(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 2 + 0
-
+                            carry = b3Three(tmp);
                         }
                         else{//2 + 2 + 0
-
+                            carry = b3Four(tmp);
                         }
                     }
                     else if (b[i].val == Base3Digit.ONE){
                         if(carry.val == Base3Digit.ZERO){//0 + 2 + 1
-
+                            carry = b3Three(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 2 + 1
-
+                            carry = b3Four(tmp);
                         }
                         else{//2 + 2 + 1
-
+                            carry = b3Five(tmp);
                         }
                     }
                     else{
                         if(carry.val == Base3Digit.ZERO){//0 + 2 + 2
-
+                            carry = b3Four(tmp);
                         }
                         else if(carry.val == Base3Digit.ONE){//1 + 2 + 2
-
+                            carry = b3Five(tmp);
                         }
-                        else{//2 + 2 + 2
-
+                        else{//2 + 2 + 2 = 6
+                            carry = new trit(2);
+                            tmp.add(new trit(0));
                         }
                     }
                 }
@@ -456,6 +495,45 @@ public class Main {
         }
 
         return ret;
+    }
+
+    private static trit b3Five(List<trit> tmp) {
+        trit carry;
+        tmp.add(new trit(2));
+        carry = new trit(1);
+        return carry;
+    }
+
+    private static trit b3Four(List<trit> tmp) {
+        trit carry;
+        tmp.add(new trit(1));
+        carry = new trit(1);
+        return carry;
+    }
+
+    private static trit b3Three(List<trit> tmp) {
+        trit carry;
+        b3Zero(tmp);
+        carry = new trit(1);
+        return carry;
+    }
+
+    private static trit b3Two(List<trit> tmp) {
+        trit carry;
+        tmp.add(new trit(2));
+        carry = new trit(0);
+        return carry;
+    }
+
+    private static trit b3One(List<trit> tmp) {
+        trit carry;
+        tmp.add(new trit(1));
+        carry = new trit(0);
+        return carry;
+    }
+
+    private static void b3Zero(List<trit> tmp) {
+        tmp.add(new trit(0));
     }
 
     private static String bitArrayToString(bit[] B){
