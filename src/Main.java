@@ -1,5 +1,4 @@
 import java.math.BigInteger;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class Main {
@@ -38,27 +37,6 @@ public class Main {
         String b3s = tritArrayToString(b3);
         System.out.println("  in base 3 = " + b3s);
 
-/*
-
-        long start = System.currentTimeMillis();
-        bit[] base2res = addBase2(intToBitArray(a),intToBitArray(b)); //ADD
-        long base2FinishTime = System.currentTimeMillis();
-        long base2Time = base2FinishTime - start;
-
-        String ab2s = bitArrayToString(base2res);
-
-        System.out.println("\nIn base 2: " + bitArrayToString(a2) + " + " + bitArrayToString(b2) + " = " +  ab2s);
-        try{
-            System.out.println("In base 10: " + base2ToBigInteger(a2) + " + " + base2ToBigInteger(b2) + " = " + base2ToBigInteger(base2res));
-        }
-        catch (NumberFormatException n){
-            System.out.println("Java builtin cannot parse such big a number");
-        }
-        System.out.println("Computed in " + base2Time + "ms");
-*/
-
-
-
         long start = System.currentTimeMillis();
         bit[] base2mult = base2Multiply(a2, b2); //MULT
         long base2FinishTime = System.currentTimeMillis();
@@ -74,24 +52,6 @@ public class Main {
             System.out.println("Java builtin cannot parse such big a number");
         }
         System.out.println("Computed in " + base2Time + "ms");
-
-/*
-        start = System.currentTimeMillis();
-        trit[] base3res = addBase3(intToTritArray(a), intToTritArray(b)); //ADD
-        long base3FinishTime = System.currentTimeMillis();
-        long base3Time = base3FinishTime - start;
-
-        String ab3s = tritArrayToString(base3res);
-
-        System.out.println("\nIn base 3: " + tritArrayToString(a3) + " + " + tritArrayToString(b3) + " = " +  ab3s);
-        try{
-            System.out.println("In base 10: " + base3ToBigInteger(a3) + " + " + base3ToBigInteger(b3) + " = " + base3ToBigInteger(base3res));
-        }
-        catch (NumberFormatException n){
-            System.out.println("Java builtin cannot parse such big a number");
-        }
-        System.out.println("Computed in " + base3Time + "ms");
-*/
 
         start = System.currentTimeMillis();
         trit[] base3mult = base3Multiply(a3, b3); //MULT
@@ -116,9 +76,10 @@ public class Main {
 
 
         if(base3Time > base2Time)
-            System.out.println("Base 2 is faster!\n");//almost never
+            System.out.println("Base 2 is faster!\n");//never
         else if(base2Time > base3Time)
-            System.out.println("Base 3 is faster! " + String.format("%,.0f", (double)base3Time) + "ms < " + String.format("%,.0f", (double)base2Time) + "ms! \n");
+            System.out.println("Base 3 is faster! " + String.format("%,.0f", (double)base3Time) + "ms < " + String.format("%,.0f", (double)base2Time) + "ms! \n" +
+                    (double)(base2Time - base3Time)/base3Time*100.0 +  "% faster!");
         else
             System.out.println("Same, maybe try higher numbers");
     }
