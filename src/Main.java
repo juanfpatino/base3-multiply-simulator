@@ -1,11 +1,16 @@
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
 
         Scanner s = new Scanner(System.in);
-        System.out.println("Type two values to add in base2 and base3");
+        System.out.println("The purpose of this simulation is to compare the speed of arithmetic" +
+                " in base 2 versus base 3");
+
+        if(args.length == 0)
+            System.out.println("Give two values to multiply");
 
         //a
         BigInteger a;
@@ -18,10 +23,9 @@ public class Main {
         System.out.println("a in base 2 = " + a2s);
         trit[] a3 = intToTritArray(a);
         String a3s = tritArrayToString(a3);
-        System.out.println("a in base 3 = " + a3s);
+        System.out.println("  in base 3 = " + a3s);
 
         //b
-        //a
         BigInteger b;
         if(args.length == 0)
             b = s.nextBigInteger();
@@ -32,8 +36,9 @@ public class Main {
         System.out.println("b in base 2 = " + b2s);
         trit[] b3 = intToTritArray(b);
         String b3s = tritArrayToString(b3);
-        System.out.println("b in base 3 = " + b3s);
+        System.out.println("  in base 3 = " + b3s);
 
+/*
 
         long start = System.currentTimeMillis();
         bit[] base2res = addBase2(intToBitArray(a),intToBitArray(b)); //ADD
@@ -50,11 +55,14 @@ public class Main {
             System.out.println("Java builtin cannot parse such big a number");
         }
         System.out.println("Computed in " + base2Time + "ms");
+*/
 
-        start = System.currentTimeMillis();
+
+
+        long start = System.currentTimeMillis();
         bit[] base2mult = base2Multiply(a2, b2); //MULT
-        base2FinishTime = System.currentTimeMillis();
-        base2Time = base2FinishTime - start;
+        long base2FinishTime = System.currentTimeMillis();
+        long base2Time = base2FinishTime - start;
 
         String base2multS = bitArrayToString(base2mult);
 
@@ -67,6 +75,7 @@ public class Main {
         }
         System.out.println("Computed in " + base2Time + "ms");
 
+/*
         start = System.currentTimeMillis();
         trit[] base3res = addBase3(intToTritArray(a), intToTritArray(b)); //ADD
         long base3FinishTime = System.currentTimeMillis();
@@ -82,9 +91,36 @@ public class Main {
             System.out.println("Java builtin cannot parse such big a number");
         }
         System.out.println("Computed in " + base3Time + "ms");
+*/
+
+        start = System.currentTimeMillis();
+        trit[] base3mult = base3Multiply(a3, b3); //MULT
+        long base3FinishTime = System.currentTimeMillis();
+        long base3Time = base3FinishTime - start;
+
+        String base3multS = tritArrayToString(base3mult);
+
+        System.out.println("\nIn base 3: " + tritArrayToString(a3) + " x " + tritArrayToString(b3) + " = " +  base3multS);
+        try{
+            System.out.println("In base 10: " + base3ToBigInteger(a3) +  " x " + base3ToBigInteger(b3) + " = " + base3ToBigInteger(base3mult));
+        }
+        catch (NumberFormatException n){
+            System.out.println("Java builtin cannot parse such big a number");
+        }
+        System.out.println("Computed in " + base3Time + "ms\n");
+
+        if(base3ToBigInteger(base3mult).equals(base2ToBigInteger(base2mult)) && base3ToBigInteger(base3mult).equals(a.multiply(b)))
+            System.out.println("Arithmetic is all correct!\n");
+        else
+            System.out.println("Arithmetic does not equal " + a.multiply(b));
 
 
-
+        if(base3Time > base2Time)
+            System.out.println("Base 2 is faster!\n");//almost never
+        else if(base2Time > base3Time)
+            System.out.println("Base 3 is faster! " + String.format("%,.0f", (double)base3Time) + "ms < " + String.format("%,.0f", (double)base2Time) + "ms! \n");
+        else
+            System.out.println("Same, maybe try higher numbers");
     }
 
     private static bit[] intToBitArray(BigInteger i){
@@ -249,6 +285,44 @@ public class Main {
 
     }
 
+    private static trit[] base3Multiply(trit[] a, trit[] b){
+
+        if(a.length == 1){
+            if(a[0].val == Base3Digit.ZERO){
+                return new trit[]{new trit(0)};
+            }
+            else if(a[0].val == Base3Digit.ONE){
+                return b;
+            }
+            else
+                return addBase3(b,b);
+        }
+        if(b.length == 1){
+            if(b[0].val == Base3Digit.ZERO){
+                return new trit[]{new trit(0)};
+            }
+            else if(b[0].val == Base3Digit.ONE){
+                return a;
+            }
+            else
+                return addBase3(a,a);
+        }
+
+        trit[] ret = Arrays.copyOf(a, a.length);
+
+        BigInteger i = base3ToBigInteger(b);
+
+        for(BigInteger j = BigInteger.ONE; j.compareTo(i) < 0; j = j.add(BigInteger.ONE)){
+
+            ret = addBase3(ret, a);
+
+        }
+
+        return ret;
+
+    }
+
+
     private static BigInteger base2ToBigInteger(bit[] b) {
         BigInteger i = BigInteger.ZERO;
 
@@ -307,15 +381,31 @@ public class Main {
     }
 
     private static trit getBase3Carry(trit[] a, List<trit> tmp, trit carry, int i) {
-        if(carry.val == Base3Digit.ONE){
+        //c + a
+        if(carry.val == Base3Digit.ONE){//either there IS a carry of 1 or two
             if(a[i].val == Base3Digit.ONE){ //1 + 1
                 carry = b3Two(tmp);
             }
             else if(a[i].val == Base3Digit.TWO){//2 + 1
                 carry = b3Three(tmp);
             }
+            else{//1 + 0
+                carry = b3One(tmp);
+            }
+
         }
-        else{//0 + whatever
+        else if(carry.val == Base3Digit.TWO){
+            if(a[i].val == Base3Digit.ONE){ //2 + 1
+                carry = b3Three(tmp);
+            }
+            else if(a[i].val == Base3Digit.TWO){//2 + 2
+                carry = b3Four(tmp);
+            }
+            else{//2 + 0
+                carry = b3Two(tmp);
+            }
+        }
+        else{//0 + whatever //or there isn't
             tmp.add(a[i]);
         }
         return carry;
