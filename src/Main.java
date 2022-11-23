@@ -285,7 +285,6 @@ public class Main {
     private static BigInteger base3ToBigInteger(trit[] b) {
         BigInteger i = BigInteger.ZERO;
         BigInteger three = new BigInteger("3");
-        BigInteger six = new BigInteger("6");
         String bLength = String.valueOf(b.length);
 
         //this is messy
